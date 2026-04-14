@@ -4,7 +4,8 @@
  * Start the WebSocket gateway server for remote agent control.
  */
 
-import { style, printSection, printSuccess, printError, printInfo } from '../utils/console.js';
+import { style, printSuccess, printError } from '../utils/console.js';
+import { printGatewaySplash } from '../utils/splash.js';
 import { Gateway } from '../../protocol/gateway.js';
 import { getSessionStore } from '../../sessions/index.js';
 
@@ -12,9 +13,7 @@ export async function gatewayCommand(args: { port?: string; host?: string }): Pr
   const port = parseInt(args.port || '18789', 10);
   const host = args.host || 'localhost';
 
-  console.log('');
-  console.log(style.bold(style.cyan('═══ Mohs Agent Gateway ═══')));
-  console.log('');
+  printGatewaySplash(port);
 
   const sessionStore = getSessionStore();
 
@@ -27,7 +26,6 @@ export async function gatewayCommand(args: { port?: string; host?: string }): Pr
   try {
     await gateway.start();
     printSuccess(`Gateway started on ${host}:${port}`);
-    printInfo('Press Ctrl+C to stop');
 
     // Keep process alive
     process.on('SIGINT', async () => {
