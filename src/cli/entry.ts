@@ -15,6 +15,7 @@ import {
   gatewayCommand,
 } from './commands/index.js';
 import { style } from './utils/console.js';
+import { printSplash } from './utils/splash.js';
 
 /**
  * Create the CLI program
@@ -116,6 +117,14 @@ export async function entry(args: string[] = process.argv): Promise<void> {
     await configLoader.load();
   } catch {
     // Config might not exist yet, that's ok
+  }
+
+  // Show splash for primary commands
+  const cmd = args[2]; // args[0] = node, args[1] = script
+  const splashCommands = ['status', 'health', 'sessions', 'config', 'daemon', 'gateway', 'setup', 'agent'];
+
+  if (splashCommands.includes(cmd)) {
+    printSplash();
   }
 
   const program = createCLI();
