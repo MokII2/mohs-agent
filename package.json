@@ -4,6 +4,9 @@
   "description": "AI Agent Framework - Multi-agent orchestrator with self-evolution and five-layer memory",
   "main": "dist/index.js",
   "type": "module",
+  "bin": {
+    "mohs-agent": "./bin/cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
