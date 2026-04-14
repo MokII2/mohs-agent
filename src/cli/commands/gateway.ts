@@ -10,7 +10,7 @@ import { Gateway } from '../../protocol/gateway.js';
 import { getSessionStore } from '../../sessions/index.js';
 
 export async function gatewayCommand(args: { port?: string; host?: string }): Promise<void> {
-  const port = parseInt(args.port || '18789', 10);
+  const port = parseInt(args.port || '18888', 10);
   const host = args.host || 'localhost';
 
   printGatewaySplash(port);

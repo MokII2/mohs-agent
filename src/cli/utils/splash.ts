@@ -51,7 +51,7 @@ export function printGatewaySplash(port: number): void {
   console.log(style.cyan('    ║') + style.bold(style.cyan('         🦑  Mohs-agent Gateway  v1.0.0               ')) + style.cyan('║'));
   console.log(style.cyan('    ╠══════════════════════════════════════════════════════╣'));
   console.log(style.cyan('    ║') + style.green('  ⚡ WebSocket Server Ready                            ') + style.cyan('║'));
-  console.log(style.cyan('    ║') + style.white('     Endpoint: ') + style.yellow(`ws://localhost:${port}`) + style.white('                    ') + style.cyan('║'));
+  console.log(style.cyan('    ║') + style.white('     Endpoint: ') + style.yellow(`ws://localhost:${port}`) + style.white('                   ') + style.cyan('║'));
   console.log(style.cyan('    ║') + style.dim('     Press Ctrl+C to stop                              ') + style.cyan('║'));
   console.log(style.cyan('    ╚══════════════════════════════════════════════════════╝'));
   console.log('');
