@@ -12,6 +12,7 @@ import {
   configCommand,
   daemonCommand,
   setupCommand,
+  gatewayCommand,
 } from './commands/index.js';
 import { style } from './utils/console.js';
 
@@ -68,6 +69,14 @@ export function createCLI(): Command {
     .description('Manage mohs-agent daemon service')
     .option('-a, --action <action>', 'Action: status, start, stop, restart, install, uninstall')
     .action(daemonCommand);
+
+  // Gateway command
+  program
+    .command('gateway')
+    .description('Start WebSocket gateway server for remote control')
+    .option('-p, --port <port>', 'Port to listen on', '18789')
+    .option('-h, --host <host>', 'Host to bind to', 'localhost')
+    .action(gatewayCommand);
 
   // Agent command
   program
