@@ -27,6 +27,7 @@
   "dependencies": {
     "chromadb": "^1.0.0",
     "commander": "^14.0.3",
+    "grammy": "^1.33.0",
     "uuid": "^11.0.5",
     "ws": "^8.18.0",
     "yaml": "^2.6.1",

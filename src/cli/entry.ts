@@ -13,6 +13,7 @@ import {
   daemonCommand,
   setupCommand,
   gatewayCommand,
+  startCommand,
 } from './commands/index.js';
 import { style } from './utils/console.js';
 import { printSplash } from './utils/splash.js';
@@ -79,6 +80,16 @@ export function createCLI(): Command {
     .option('-h, --host <host>', 'Host to bind to', 'localhost')
     .action(gatewayCommand);
 
+  // Start command
+  program
+    .command('start')
+    .description('Start mohs-agent channels and services')
+    .option('--webchat', 'Start WebChat channel')
+    .option('--telegram', 'Start Telegram channel')
+    .option('--port <port>', 'WebChat port', '8080')
+    .option('--bot-token <token>', 'Telegram bot token')
+    .action(startCommand);
+
   // Agent command
   program
     .command('agent')
@@ -121,7 +132,7 @@ export async function entry(args: string[] = process.argv): Promise<void> {
 
   // Show splash for primary commands
   const cmd = args[2]; // args[0] = node, args[1] = script
-  const splashCommands = ['status', 'health', 'sessions', 'config', 'daemon', 'gateway', 'setup', 'agent'];
+  const splashCommands = ['status', 'health', 'sessions', 'config', 'daemon', 'gateway', 'setup', 'agent', 'start'];
 
   if (splashCommands.includes(cmd)) {
     printSplash();
