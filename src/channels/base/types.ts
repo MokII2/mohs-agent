@@ -64,6 +64,7 @@ export interface ChannelCapabilities {
 export interface ChannelConfig {
   enabled: boolean;
   botToken?: string;
+  signingSecret?: string;
   appId?: string;
   appSecret?: string;
   webhookUrl?: string;

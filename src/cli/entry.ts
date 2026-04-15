@@ -86,8 +86,14 @@ export function createCLI(): Command {
     .description('Start mohs-agent channels and services')
     .option('--webchat', 'Start WebChat channel')
     .option('--telegram', 'Start Telegram channel')
+    .option('--slack', 'Start Slack channel')
+    .option('--discord', 'Start Discord channel')
+    .option('--whatsapp', 'Start WhatsApp channel')
     .option('--port <port>', 'WebChat port', '8080')
     .option('--bot-token <token>', 'Telegram bot token')
+    .option('--slack-token <token>', 'Slack bot token')
+    .option('--slack-secret <secret>', 'Slack signing secret')
+    .option('--discord-token <token>', 'Discord bot token')
     .action(startCommand);
 
   // Agent command

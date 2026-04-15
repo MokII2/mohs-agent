@@ -4,7 +4,7 @@
  * Integration with Slack using Bolt framework.
  */
 
-import { App } from '@slack/bolt';
+import SlackBolt from '@slack/bolt';
 import { BaseChannel } from '../base/index.js';
 import type {
   ChannelConfig,
@@ -19,6 +19,8 @@ interface SlackChannelConfig extends ChannelConfig {
   port?: number;
 }
 
+type SlackApp = InstanceType<typeof SlackBolt.App>;
+
 export class SlackChannel extends BaseChannel {
   readonly id = 'slack';
   readonly name = 'Slack';
@@ -32,7 +34,7 @@ export class SlackChannel extends BaseChannel {
     threads: true,
   };
 
-  private app?: App;
+  private app?: SlackApp;
 
   async initialize(config: ChannelConfig): Promise<void> {
     await super.initialize(config);
@@ -54,7 +56,7 @@ export class SlackChannel extends BaseChannel {
       throw new Error('Bot token and signing secret not configured');
     }
 
-    this.app = new App({
+    this.app = new SlackBolt.App({
       token: botToken,
       signingSecret: signingSecret,
     });
