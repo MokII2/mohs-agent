@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mohs-agent Chat</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #0f1419;
+      --bg-secondary: #1a2332;
+      --bg-tertiary: #243044;
+      --text-primary: #ffffff;
+      --text-secondary: #8899a6;
+      --accent: #4a9eff;
+      --accent-hover: #3b8beb;
+      --border: #2f3f54;
+      --success: #00d26a;
+      --error: #f4212e;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Login Screen */
+    .login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .login-screen.hidden { display: none; }
+
+    .login-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-card h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .login-card p {
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 15px;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Chat Screen */
+    .chat-screen {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .chat-screen.active { display: flex; }
+
+    /* Header */
+    .chat-header {
+      display: flex;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-header h2 {
+      font-size: 16px;
+      flex: 1;
+    }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--error);
+    }
+
+    .status-dot.connected {
+      background: var(--success);
+    }
+
+    .btn-leave {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      cursor: pointer;
+      margin-left: 12px;
+    }
+
+    .btn-leave:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    /* Messages */
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      max-width: 70%;
+    }
+
+    .message.user {
+      align-self: flex-end;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+    }
+
+    .message.system {
+      align-self: center;
+      max-width: 100%;
+    }
+
+    .message-sender {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      padding: 0 8px;
+    }
+
+    .message-bubble {
+      padding: 12px 16px;
+      border-radius: 16px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .message.user .message-bubble {
+      background: var(--accent);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.assistant .message-bubble {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+
+    .message.system .message-bubble {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 20px;
+    }
+
+    .message-time {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      padding: 0 8px;
+    }
+
+    .typing-indicator {
+      display: none;
+      padding: 12px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      max-width: 70%;
+    }
+
+    .typing-indicator.visible {
+      display: block;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .typing-dots span {
+      width: 8px;
+      height: 8px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    /* Input Area */
+    .input-area {
+      display: flex;
+      padding: 16px 20px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      gap: 12px;
+    }
+
+    .message-input {
+      flex: 1;
+      padding: 14px 18px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      color: var(--text-primary);
+      font-size: 15px;
+      outline: none;
+      resize: none;
+      max-height: 120px;
+    }
+
+    .message-input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn-send {
+      width: 48px;
+      height: 48px;
+      background: var(--accent);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-send:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-send:active {
+      transform: scale(0.95);
+    }
+
+    .btn-send:disabled {
+      background: var(--bg-tertiary);
+      cursor: not-allowed;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <h1>Mohs-agent</h1>
+      <p>Connect to start chatting with your AI agent</p>
+      <div class="form-group">
+        <label for="nameInput">Your Name</label>
+        <input type="text" id="nameInput" placeholder="Enter your name" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="serverInput">Server Address</label>
+        <input type="text" id="serverInput" placeholder="ws://localhost:8080" value="ws://localhost:8080">
+      </div>
+      <button class="btn" id="connectBtn">Connect</button>
+    </div>
+  </div>
+
+  <!-- Chat Screen -->
+  <div class="chat-screen" id="chatScreen">
+    <div class="chat-header">
+      <h2>Mohs-agent Chat</h2>
+      <div class="connection-status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Connecting...</span>
+      </div>
+      <button class="btn-leave" id="leaveBtn">Leave</button>
+    </div>
+
+    <div class="messages-container" id="messagesContainer">
+      <div class="message system">
+        <div class="message-bubble" id="welcomeMessage"></div>
+      </div>
+    </div>
+
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="typing-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <textarea
+        class="message-input"
+        id="messageInput"
+        placeholder="Type your message..."
+        rows="1"
+      ></textarea>
+      <button class="btn-send" id="sendBtn" disabled>&#9654;</button>
+    </div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const loginScreen = document.getElementById('loginScreen');
+    const chatScreen = document.getElementById('chatScreen');
+    const nameInput = document.getElementById('nameInput');
+    const serverInput = document.getElementById('serverInput');
+    const connectBtn = document.getElementById('connectBtn');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const welcomeMessage = document.getElementById('welcomeMessage');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const leaveBtn = document.getElementById('leaveBtn');
+
+    let ws = null;
+    let userName = '';
+    let clientId = '';
+    let isConnected = false;
+
+    // Connect to WebSocket server
+    function connect() {
+      const server = serverInput.value.trim();
+      userName = nameInput.value.trim() || 'Anonymous';
+
+      if (!server) {
+        alert('Please enter a server address');
+        return;
+      }
+
+      connectBtn.disabled = true;
+      connectBtn.textContent = 'Connecting...';
+
+      try {
+        ws = new WebSocket(server);
+      } catch (err) {
+        showLoginError('Invalid server address');
+        return;
+      }
+
+      ws.onopen = handleOpen;
+      ws.onclose = handleClose;
+      ws.onerror = handleError;
+      ws.onmessage = handleMessage;
+    }
+
+    function handleOpen() {
+      isConnected = true;
+      updateStatus(true);
+
+      // Send join message with name
+      sendRaw({
+        type: 'connect',
+        name: userName
+      });
+
+      connectBtn.disabled = false;
+      connectBtn.textContent = 'Connect';
+      loginScreen.classList.add('hidden');
+      chatScreen.classList.add('active');
+    }
+
+    function handleClose() {
+      isConnected = false;
+      updateStatus(false);
+      loginScreen.classList.remove('hidden');
+      chatScreen.classList.remove('active');
+    }
+
+    function handleError() {
+      showLoginError('Connection failed');
+      connectBtn.disabled = false;
+      connectBtn.textContent = 'Connect';
+    }
+
+    function handleMessage(event) {
+      try {
+        const data = JSON.parse(event.data);
+
+        switch (data.type) {
+          case 'system':
+            if (data.content.includes('Welcome')) {
+              clientId = data.content.match(/ID: (wc-[^"]+)/)?.[1] || '';
+              welcomeMessage.textContent = `Welcome, ${userName}! Your ID: ${clientId}`;
+            }
+            addSystemMessage(data.content);
+            break;
+
+          case 'message':
+            addMessage(data.fromName || 'User', data.content, data.from === clientId ? 'user' : 'assistant');
+            break;
+
+          case 'broadcast':
+            addSystemMessage(data.content);
+            break;
+
+          case 'typing':
+            if (data.from !== clientId) {
+              showTyping(data.fromName + ' is typing...');
+            }
+            break;
+        }
+      } catch (err) {
+        // Handle non-JSON messages
+        addSystemMessage(event.data);
+      }
+    }
+
+    function sendRaw(obj) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(obj));
+      }
+    }
+
+    function sendMessage() {
+      const content = messageInput.value.trim();
+      if (!content || !isConnected) return;
+
+      // Send message
+      sendRaw({
+        type: 'message',
+        content: content
+      });
+
+      // Add to UI immediately
+      addMessage(userName, content, 'user');
+
+      // Clear input
+      messageInput.value = '';
+      messageInput.style.height = 'auto';
+    }
+
+    function addMessage(sender, content, type) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${type}`;
+
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      msgDiv.innerHTML = `
+        <span class="message-sender">${sender}</span>
+        <div class="message-bubble">${escapeHtml(content)}</div>
+        <span class="message-time">${time}</span>
+      `;
+
+      messagesContainer.appendChild(msgDiv);
+      scrollToBottom();
+    }
+
+    function addSystemMessage(content) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'message system';
+      msgDiv.innerHTML = `<div class="message-bubble">${escapeHtml(content)}</div>`;
+      messagesContainer.appendChild(msgDiv);
+      scrollToBottom();
+    }
+
+    function showTyping(text) {
+      typingIndicator.querySelector('.message-bubble')?.remove();
+      const bubble = document.createElement('div');
+      bubble.className = 'message-bubble';
+      bubble.innerHTML = `<span class="typing-dots"><span></span><span></span><span></span></span> ${text}`;
+      typingIndicator.appendChild(bubble);
+      typingIndicator.classList.add('visible');
+      scrollToBottom();
+    }
+
+    function hideTyping() {
+      typingIndicator.classList.remove('visible');
+    }
+
+    function updateStatus(connected) {
+      if (connected) {
+        statusDot.classList.add('connected');
+        statusText.textContent = 'Connected';
+        sendBtn.disabled = false;
+      } else {
+        statusDot.classList.remove('connected');
+        statusText.textContent = 'Disconnected';
+        sendBtn.disabled = true;
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function scrollToBottom() {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function showLoginError(message) {
+      alert(message);
+    }
+
+    function leave() {
+      if (ws) {
+        ws.close();
+      }
+    }
+
+    // Auto-resize textarea
+    messageInput.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    // Send on Enter (Shift+Enter for newline)
+    messageInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Button clicks
+    connectBtn.addEventListener('click', connect);
+    sendBtn.addEventListener('click', sendMessage);
+    leaveBtn.addEventListener('click', leave);
+
+    // Focus name input on load
+    nameInput.focus();
+  </script>
+</body>
+</html>

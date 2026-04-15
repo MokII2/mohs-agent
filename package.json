@@ -25,8 +25,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "@slack/bolt": "^3.22.0",
+    "@whiskeysockets/baileys": "^6.8.0",
     "chromadb": "^1.0.0",
     "commander": "^14.0.3",
+    "discord.js": "^14.16.0",
     "grammy": "^1.33.0",
     "uuid": "^11.0.5",
     "ws": "^8.18.0",
