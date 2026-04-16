@@ -158,7 +158,7 @@ export async function startCommand(args: StartOptions): Promise<void> {
     printSection('Starting WebChat');
 
     const webchat = new WebChatChannel();
-    const port = parseInt(args.port || '8080', 10);
+    const port = parseInt(args.port || '13888', 10);
 
     try {
       await webchat.initialize({ enabled: true, port });
@@ -310,7 +310,7 @@ export async function startCommand(args: StartOptions): Promise<void> {
     console.log(style.dim('    --whatsapp             Start WhatsApp bot'));
     console.log(style.dim(''));
     console.log(style.dim('  Channel Options:'));
-    console.log(style.dim('    --port <port>          WebChat port (default: 8080)'));
+    console.log(style.dim('    --port <port>          WebChat port (default: 13888)'));
     console.log(style.dim('    --bot-token <token>    Telegram bot token'));
     console.log(style.dim('    --slack-token <token>  Slack bot token'));
     console.log(style.dim('    --slack-secret <sec>   Slack signing secret'));

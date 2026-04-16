@@ -89,7 +89,7 @@ export function createCLI(): Command {
     .option('--slack', 'Start Slack channel')
     .option('--discord', 'Start Discord channel')
     .option('--whatsapp', 'Start WhatsApp channel')
-    .option('--port <port>', 'WebChat port', '8080')
+    .option('--port <port>', 'WebChat port', '13888')
     .option('--bot-token <token>', 'Telegram bot token')
     .option('--slack-token <token>', 'Slack bot token')
     .option('--slack-secret <secret>', 'Slack signing secret')
